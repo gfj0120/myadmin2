@@ -48,7 +48,7 @@ export default {
         if (!isvalid) return
         // 校验成功,发送ajax请求,根据后台数据再进行判断用户名
         axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
-          console.log(res.data)
+          // console.log(res.data)
           const { meta, data } = res.data
           if (meta.status === 200) {
             this.$message({

@@ -11,13 +11,15 @@
       </el-header>
       <el-container>
         <el-aside width="200px">
+           <!-- default-active="1" 高亮的提示 -->
            <!-- <el-menu>整个包裹着全部 -->
                 <!-- <el-submenu> 导航一 -->
                    <!-- <el-menu-item-group> 导航下面的分组 -->
                       <!-- <el-menu-item 导航下面的分组下面的选项 -->
           <el-menu
           unique-opened
-      default-active="1"
+          router
+
       class="el-menu-vertical-demo"
       background-color="#545c64"
       text-color="#fff"
@@ -27,7 +29,7 @@
           <i class="el-icon-location"></i>
           <span>用户管理</span>
         </template>
-          <el-menu-item index="1-1">
+          <el-menu-item index="/users">
             <i class="el-icon-menu"></i>
             <span slot="title">用户列表</span>
           </el-menu-item>
@@ -38,18 +40,20 @@
           <i class="el-icon-location"></i>
           <span>权限管理</span>
         </template>
-          <el-menu-item index="2-1">
-            <i class="el-icon-menu"></i>
-            <span slot="title">权限列表</span>
-          </el-menu-item>
-          <el-menu-item index="2-2">
+          <el-menu-item index="/roles">
             <i class="el-icon-menu"></i>
             <span slot="title">角色列表</span>
+          </el-menu-item>
+          <el-menu-item index="/rights">
+            <i class="el-icon-menu"></i>
+            <span slot="title">权限列表</span>
           </el-menu-item>
       </el-submenu>
     </el-menu>
         </el-aside>
-        <el-main>Main</el-main>
+        <el-main>
+          <router-view></router-view>
+        </el-main>
       </el-container>
     </el-container>
 
