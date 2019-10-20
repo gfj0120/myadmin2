@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+
 export default {
   data () {
     return {
@@ -42,26 +42,43 @@ export default {
     reset () {
       this.$refs.form.resetFields()
     },
-    login () {
-      this.$refs.form.validate(isvalid => {
-        // 校验失败直接return
-        if (!isvalid) return
-        // 校验成功,发送ajax请求,根据后台数据再进行判断用户名
-        axios.post('http://localhost:8888/api/private/v1/login', this.form).then(res => {
-          // console.log(res.data)
-          const { meta, data } = res.data
-          if (meta.status === 200) {
-            this.$message({
-              message: meta.msg,
-              type: 'success'
-            })
-            localStorage.setItem('token', data.token)
-            this.$router.push({ name: 'index' })
-          } else {
-            this.$message.error(meta.msg)
-          }
-        })
-      })
+    async login () {
+      try {
+        await this.$refs.form.validate()
+        console.log('校验通过了,发送请求')
+        const { meta, data } = await this.$axios.post('login', this.form)
+        if (meta.status === 200) {
+          this.$message({
+            message: meta.msg,
+            type: 'success'
+          })
+          localStorage.setItem('token', data.token)
+          this.$router.push({ name: 'index' })
+        } else {
+          this.$message.error(meta.msg)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+      // this.$refs.form.validate(isvalid => {
+      //   // 校验失败直接return
+      //   if (!isvalid) return
+      //   // 校验成功,发送ajax请求,根据后台数据再进行判断用户名
+      //   this.$axios.post('login', this.form).then(res => {
+      //     // console.log(res.data)
+      //     const { meta, data } = res
+      //     if (meta.status === 200) {
+      //       this.$message({
+      //         message: meta.msg,
+      //         type: 'success'
+      //       })
+      //       localStorage.setItem('token', data.token)
+      //       this.$router.push({ name: 'index' })
+      //     } else {
+      //       this.$message.error(meta.msg)
+      //     }
+      //   })
+      // })
     }
   }
 }
