@@ -48,7 +48,7 @@
         <template v-slot:default="obj">
          <el-button @click="showChange(obj.row)" plain size="small" type="primary" icon="el-icon-edit"></el-button>
          <el-button @click="delUser(obj.row.id)" plain size="small" type="danger" icon="el-icon-delete"></el-button>
-         <el-button plain size="small" type="success" icon="el-icon-check">分配角色</el-button>
+         <el-button @click="showRolesDialog(obj.row)" plain size="small" type="success" icon="el-icon-check">分配角色</el-button>
          </template>
       </el-table-column>
     </el-table>
@@ -115,10 +115,38 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button @click="dialogChange = false">取 消</el-button>
         <el-button type="primary" @click="changeUser">确 定</el-button>
       </span>
     </el-dialog>
+
+  <!-- 分配角色对话框 -->
+
+<el-dialog
+  title="分配角色"
+  :visible.sync="rolesDialog"
+  width="30%">
+ <el-form :model="rlesForm" label-width="80px">
+   <el-form-item label="用户名">
+      <el-tag type="info">{{ rlesForm.username }}</el-tag>
+    </el-form-item>
+    <el-form-item  label="角色列表">
+      <el-select v-model="rlesForm.rid" placeholder="请选择">
+        <el-option
+          v-for="item in options"
+          :key="item.id"
+          :label="item.roleName"
+          :value="item.id">
+        </el-option>
+  </el-select>
+    </el-form-item>
+ </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="rolesDialog = false">取 消</el-button>
+    <el-button @click="assignRoles" type="primary">分配角色</el-button>
+  </span>
+</el-dialog>
+
   </div>
 </template>
 
@@ -163,7 +191,14 @@ export default {
         username: '',
         email: '',
         mobile: ''
-      }
+      },
+      rolesDialog: false,
+      rlesForm: {
+        username: '',
+        id: '',
+        rid: ''
+      },
+      options: []
     }
   },
   created () {
@@ -314,6 +349,44 @@ export default {
         }
       } catch (e) {
 
+      }
+    },
+    // 展现分配角色的对话框
+    async showRolesDialog (row) {
+      this.rolesDialog = true
+      // console.log(row)
+      this.rlesForm.username = row.username
+      this.rlesForm.id = row.id
+      // this.rlesForm.rid = row.rid
+      // 进入页面就要回显,等到发送ajax拿到角色列表后虽然有角色id,但是并不是当前点击时,需要拿到的角色id,而是所有的角色id,进行model和options配置
+      const res = await this.$axios.get(`users/${this.rlesForm.id}`)
+      if (res.meta.status === 200) {
+        // this.rlesForm.rid = res.data.rid
+        const rid = res.data.rid
+        this.rlesForm.rid = rid === -1 ? '' : rid
+      }
+      const { data, meta } = await this.$axios.get('roles')
+      // console.log(res)
+      if (meta.status === 200) {
+        this.options = data
+      } else {
+        this.$message.error(meta.msg)
+      }
+    },
+    // 点击分配角色,发送ajax,渲染数据
+    async  assignRoles () {
+      const { id, rid } = this.rlesForm
+      if (rid === '') {
+        return
+      }
+      const { meta } = await this.$axios.put(`users/${id}/role`, { rid })
+      // console.log(res)
+      if (meta.status === 200) {
+        this.$message.success(meta.msg)
+        this.rolesDialog = false
+        this.getUseList()
+      } else {
+        this.$message.error(meta.msg)
       }
     }
   }
