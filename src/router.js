@@ -2,9 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Index from './components/index.vue'
 import Login from './components/login.vue'
-import Users from './components/users.vue'
-import Roles from './components/roles.vue'
-import Rights from './components/rights.vue'
+import Users from './components/users/users.vue'
+import Roles from './components/rights/roles.vue'
+import Rights from './components/rights/rights.vue'
 
 Vue.use(Router)
 const originalPush = Router.prototype.push
